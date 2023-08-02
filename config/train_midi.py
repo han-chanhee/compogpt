@@ -10,10 +10,10 @@ log_interval = 10  # don't print too too often
 always_save_checkpoint = False
 
 wandb_log = False  # override via command line if you like
-wandb_project = "midi-char"
+wandb_project = "midi2text_demo"
 wandb_run_name = "mini-gpt"
 
-dataset = "midi_char"
+dataset = "midi2text_demo"
 gradient_accumulation_steps = 1
 batch_size = 128
 block_size = 512  # context of up to 256 previous characters
