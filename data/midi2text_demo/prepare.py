@@ -3,7 +3,7 @@ import tiktoken
 import numpy as np
 
 
-with open("composure.txt", "r") as f:
+with open("midi2text.txt", "r") as f:
     data = f.read()
 n = len(data)
 train_data = data[: int(n * 0.9)]
