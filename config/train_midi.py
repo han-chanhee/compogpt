@@ -4,7 +4,7 @@
 out_dir = "out-midi"
 eval_interval = 1000  # keep frequent because we'll overfit
 eval_iters = 400
-log_interval = 100  # don't print too too often
+log_interval = 1000  # don't print too too often
 
 # we expect to overfit on this small dataset, so only save when val improves
 always_save_checkpoint = False
@@ -19,8 +19,8 @@ batch_size = 32
 block_size = 512  # context of up to 256 previous characters
 
 # baby GPT model :)
-n_layer = 48
-n_head = 16
+n_layer = 36
+n_head = 12
 n_embd = 1024
 dropout = 0.2
 
