@@ -13,6 +13,10 @@ val_data = data[int(n * 0.9) :]
 enc = tiktoken.get_encoding("gpt2")
 train_ids = enc.encode_ordinary(train_data)
 val_ids = enc.encode_ordinary(val_data)
+print(len(set(train_ids)))
+print(set(train_ids))
+print(len(set(val_ids)))
+print(set(val_ids))
 print(f"train has {len(train_ids):,} tokens")
 print(f"val has {len(val_ids):,} tokens")
 
