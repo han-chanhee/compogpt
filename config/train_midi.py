@@ -10,7 +10,7 @@ log_interval = 100  # don't print too too often
 always_save_checkpoint = False
 
 wandb_log = False  # override via command line if you like
-wandb_project = "midi2text_demo"
+wandb_project = "giant_MIDI_midi2text"
 wandb_run_name = "mini-gpt"
 
 dataset = "midi2text_demo"
