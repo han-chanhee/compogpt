@@ -4,7 +4,7 @@
 out_dir = "out-midi"
 eval_interval = 1000  # keep frequent because we'll overfit
 eval_iters = 400
-log_interval = 1000  # don't print too too often
+log_interval = 500  # don't print too too often
 
 # we expect to overfit on this small dataset, so only save when val improves
 always_save_checkpoint = False
@@ -15,13 +15,13 @@ wandb_run_name = "mini-gpt"
 
 dataset = "giant_MIDI_midi2text"
 gradient_accumulation_steps = 1
-batch_size = 32
+batch_size = 64
 block_size = 512  # context of up to 256 previous characters
 
 # baby GPT model :)
-n_layer = 36
+n_layer = 16
 n_head = 16
-n_embd = 1024
+n_embd = 512
 dropout = 0.2
 
 learning_rate = 1e-3  # with baby networks can afford to go a bit higher
