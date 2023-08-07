@@ -19,19 +19,19 @@ batch_size = 64
 block_size = 512  # context of up to 256 previous characters
 
 # baby GPT model :)
-n_layer = 16
-n_head = 16
-n_embd = 512
+n_layer = 12
+n_head = 12
+n_embd = 432
 dropout = 0.2
 
 learning_rate = 1e-3  # with baby networks can afford to go a bit higher
-max_iters = 100000
-lr_decay_iters = 100000  # make equal to max_iters usually
+max_iters = 50000
+lr_decay_iters = 50000  # make equal to max_iters usually
 min_lr = 1e-4  # learning_rate / 10 usually
 beta2 = 0.99  # make a bit bigger because number of tokens per iter is small
 
 warmup_iters = 100  # not super necessary potentially
 
 # on macbook also add
-device = 'cpu'  # run on cpu only
+# device = 'cpu'  # run on cpu only
 # compile = False # do not torch compile the model
