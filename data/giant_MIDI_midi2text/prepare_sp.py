@@ -3,7 +3,7 @@ import sentencepiece as spm
 import numpy as np
 
 # Load or train SentencePiece model
-spm.SentencePieceTrainer.train(input='giant_midi.txt', model_prefix='spm_model', vocab_size=1000)
+spm.SentencePieceTrainer.train(input='giant_midi2.txt', model_prefix='spm_model', vocab_size=1000)
 sp = spm.SentencePieceProcessor()
 sp.load('spm_model.model')
 
