@@ -8,7 +8,7 @@ sp = spm.SentencePieceProcessor()
 sp.load('spm_model.model')
 
 # Load data
-with open("giant_midi.txt", "r") as f:
+with open("giant_midi2.txt", "r") as f:
     data = f.read()
 
 # Tokenize using SentencePiece
