@@ -3,11 +3,16 @@ import sentencepiece as spm
 import numpy as np
 import torch
 
+# Define a callback function for progress logging
+def logging_callback(progress, model_trainer):
+    print(f"Training: {progress:.1%} complete")
+
 # GPU 사용 가능 여부 확인
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load or train SentencePiece model
-spm.SentencePieceTrainer.train(input='giant_midi2.txt', model_prefix='spm_model', vocab_size=1000)
+# SentencePiece 모델 훈련 시 GPU 사용 옵션 추가 및 콜백 함수 등록
+spm.SentencePieceTrainer.train(input='giant_midi2.txt', model_prefix='spm_model', vocab_size=1000, use_gpu=True,
+                               progress_callback=logging_callback)
 sp = spm.SentencePieceProcessor()
 sp.load('spm_model.model')
 
@@ -35,6 +40,6 @@ val_ids = sp.encode_as_ids(data[int(len(data) * 0.9) :])
 train_ids = torch.tensor(train_ids, dtype=torch.long).to(device)
 val_ids = torch.tensor(val_ids, dtype=torch.long).to(device)
 
-# Export to binary files
+# Export to binary files directly from GPU
 train_ids.cpu().numpy().astype(np.uint16).tofile("train.bin")
 val_ids.cpu().numpy().astype(np.uint16).tofile("val.bin")
