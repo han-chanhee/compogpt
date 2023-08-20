@@ -1,6 +1,10 @@
 import os
 import sentencepiece as spm
 import numpy as np
+import torch
+
+# GPU 사용 가능 여부 확인
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load or train SentencePiece model
 spm.SentencePieceTrainer.train(input='giant_midi2.txt', model_prefix='spm_model', vocab_size=1000)
@@ -27,8 +31,10 @@ print("Unique Val Tokens:", unique_val_tokens)
 train_ids = sp.encode_as_ids(data[: int(len(data) * 0.9)])
 val_ids = sp.encode_as_ids(data[int(len(data) * 0.9) :])
 
+# Move data to GPU
+train_ids = torch.tensor(train_ids, dtype=torch.long).to(device)
+val_ids = torch.tensor(val_ids, dtype=torch.long).to(device)
+
 # Export to binary files
-train_ids = np.array(train_ids, dtype=np.uint16)
-val_ids = np.array(val_ids, dtype=np.uint16)
-train_ids.tofile(os.path.join(os.path.dirname(__file__), "train.bin"))
-val_ids.tofile(os.path.join(os.path.dirname(__file__), "val.bin"))
+train_ids.cpu().numpy().astype(np.uint16).tofile("train.bin")
+val_ids.cpu().numpy().astype(np.uint16).tofile("val.bin")
