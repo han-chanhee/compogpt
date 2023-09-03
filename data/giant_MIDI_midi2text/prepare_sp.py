@@ -8,7 +8,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # SentencePiece 모델 훈련 시 GPU 사용 옵션 추가
 num_cpus = os.cpu_count()
-spm.SentencePieceTrainer.train(input='giant_midi2.txt', model_prefix='spm_model', vocab_size=10000, num_threads=num_cpus)
+spm.SentencePieceTrainer.train(input='giant_midi2.txt', model_prefix='spm_model', vocab_size=1000, num_threads=num_cpus)
 sp = spm.SentencePieceProcessor()
 sp.load('spm_model.model')
 
