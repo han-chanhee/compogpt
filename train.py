@@ -29,7 +29,7 @@ from torch.distributed import init_process_group, destroy_process_group
 
 from model import GPTConfig, GPT
 import torch._dynamo
-    torch._dynamo.config.suppress_errors = True
+torch._dynamo.config.suppress_errors = True
 
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
