@@ -92,7 +92,7 @@ else:
     # ok let's assume gpt-2 encodings by default
     print("No meta.pkl found, assuming GPT-2 encodings...")
     enc = tiktoken.get_encoding("gpt2")
-    encode = lambda s: enc.encode(s, allowed_special={"<sos>","<eos>","[1]"})
+    encode = lambda s: enc.encode(s, allowed_special={"<eos>"})
     decode = lambda l: enc.decode(l)
 
 # encode the beginning of the prompt
