@@ -115,14 +115,28 @@ os.makedirs(output_dir, exist_ok=True)  # 디렉토리 생성
 
 num_samples = 10
 
-# 모델 초기화 및 생성된 샘플 저장
+max_lines = 100  # 원하는 줄 수로 수정하세요
+generated_samples_count = 0
+
 with torch.no_grad():
     with ctx:
         for k in range(num_samples):
             y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
             generated_text = decode(y[0].tolist())
 
-            # 각 샘플을 파일로 저장
-            output_path = os.path.join(output_dir, f"sample_{k+1}.txt")
-            with open(output_path, "w") as file:
-                file.write(generated_text)
+            # 결과물을 줄 단위로 분할
+            generated_lines = generated_text.strip().split('\n')
+
+            # 최대 줄 수까지만 저장
+            for line in generated_lines:
+                if generated_samples_count < max_lines:
+                    # 각 샘플을 파일로 저장
+                    output_path = os.path.join(output_dir, f"sample_{generated_samples_count + 1}.txt")
+                    with open(output_path, "w") as file:
+                        file.write(line)
+                        generated_samples_count += 1
+                else:
+                    break
+
+            if generated_samples_count >= max_lines:
+                break
