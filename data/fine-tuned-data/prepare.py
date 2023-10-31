@@ -7,8 +7,9 @@ special_tokens = ["<sos>", "<eos>"]
 for i in range(1,3305):
     special_tokens+=f"[i]"
 enc = tiktoken.get_encoding("gpt2")
-special_token_ids = [enc.encode_ordinary(token)[0] for token in special_tokens]
 
+special_token_ids = [enc.encode_ordinary(token)[0] for token in special_tokens]
+print(len(special_token_ids))
 with open("combined_formatted_data.txt", "r") as f:
     data = f.read()
 n = len(data)
