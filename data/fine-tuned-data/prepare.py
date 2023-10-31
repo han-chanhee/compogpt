@@ -9,7 +9,7 @@ for i in range(1,3305):
 enc = tiktoken.get_encoding("gpt2")
 special_token_ids = [enc.encode_ordinary(token)[0] for token in special_tokens]
 
-with open("giant_midi2.txt", "r") as f:
+with open("combined_formatted_data.txt", "r") as f:
     data = f.read()
 n = len(data)
 train_data = data[: int(n * 0.9)]
