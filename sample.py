@@ -80,7 +80,7 @@ load_meta = True
 # ):  # older checkpoints might not have these...
 #     meta_path = meta_path = os.path.join("data", "meta.pkl")
 #     load_meta = os.path.exists(meta_path)
-meta_path = meta_path = os.path.join("data", "meta.pkl")
+# meta_path = meta_path = os.path.join("data", "meta.pkl")
 if load_meta:
     print(f"Loading meta from {meta_path}...")
     with open(meta_path, "rb") as f:
