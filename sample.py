@@ -72,7 +72,7 @@ if compile:
     model = torch.compile(model)  # requires PyTorch 2.0 (optional)
 
 # look for the meta pickle in case it is available in the dataset folder
-load_meta = True
+load_meta = False
 if (
      init_from == "resume"
      and "config" in checkpoint
