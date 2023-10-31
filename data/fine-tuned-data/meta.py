@@ -11,8 +11,8 @@ index_to_special_token = {index: token for token, index in special_token_to_inde
 
 # 메타데이터 정보 저장
 meta_info = {
-    "special_token_to_index": special_token_to_index,
-    "index_to_special_token": index_to_special_token
+    "stoi": special_token_to_index,
+    "itos": index_to_special_token
 }
 
 # meta.pkl 파일에 저장
