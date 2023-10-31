@@ -73,14 +73,13 @@ if compile:
 
 # look for the meta pickle in case it is available in the dataset folder
 load_meta = True
-# if (
-#     init_from == "resume"
-#     and "config" in checkpoint
-#     and "dataset" in checkpoint["config"]
-# ):  # older checkpoints might not have these...
-#     meta_path = meta_path = os.path.join("data", "meta.pkl")
-#     load_meta = os.path.exists(meta_path)
-# meta_path = meta_path = os.path.join("data", "meta.pkl")
+if (
+     init_from == "resume"
+     and "config" in checkpoint
+     and "dataset" in checkpoint["config"]
+ ):  # older checkpoints might not have these...
+     meta_path = meta_path = os.path.join("data", "meta.pkl")
+     load_meta = os.path.exists(meta_path)
 if load_meta:
     print(f"Loading meta from {meta_path}...")
     with open(meta_path, "rb") as f:
