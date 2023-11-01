@@ -115,7 +115,7 @@ os.makedirs(output_dir, exist_ok=True)  # 디렉토리 생성
 
 num_samples = 10
 
-max_lines = 100  # 원하는 줄 수로 수정하세요
+max_lines = 150  # 원하는 줄 수로 수정하세요
 generated_samples_count = 0
 
 with torch.no_grad():
