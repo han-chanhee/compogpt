@@ -118,24 +118,32 @@ num_samples = 10
 max_lines = 150  # 원하는 줄 수로 수정하세요
 generated_samples_count = 0
 
+num_samples = 100  # 100개의 샘플 생성
+max_lines = 150  # 총 150줄까지 생성
+
+generated_samples_count = 0
+
 with torch.no_grad():
     with ctx:
         for k in range(num_samples):
             y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
             generated_text = decode(y[0].tolist())
 
-            # 결과물을 줄 단위로 분할
+            # 결과물을 줄 단위로 분할하고 각 줄에 줄 번호를 붙이고 저장
             generated_lines = generated_text.strip().split('\n')
-
-            # 최대 줄 수까지만 저장
             for line in generated_lines:
                 if generated_samples_count < max_lines:
-                    # 각 샘플을 파일로 저장
-                    output_path = os.path.join(output_dir, f"sample_{generated_samples_count + 1}.txt")
+                    # 각 샘플을 파일로 저장하고 줄번호를 붙여서 저장
+                    output_path = os.path.join(output_dir, f"[{generated_samples_count + 1}] {line}.txt")
                     with open(output_path, "w") as file:
                         file.write(line)
                         generated_samples_count += 1
                 else:
+                    break
+
+                # 줄바꿈이 있을 때마다 결과물을 저장하고 다시 줄번호를 붙여서 결과물을 생성
+                if line.endswith('\n'):
+                    generated_samples_count -= 1
                     break
 
             if generated_samples_count >= max_lines:
