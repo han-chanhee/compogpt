@@ -102,23 +102,7 @@ if start.startswith("FILE:"):
 start_ids = encode(start)
 x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...]
 
-# run generation
-with torch.no_grad():
-    with ctx:
-        for k in range(num_samples):
-            y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
-            print(decode(y[0].tolist()))
-            print("---------------")
-
-output_dir = "generated_samples"
-os.makedirs(output_dir, exist_ok=True)  # 디렉토리 생성
-
-num_samples = 10
-
-max_lines = 150  # 원하는 줄 수로 수정하세요
-generated_samples_count = 0
-
-num_samples = 100  # 100개의 샘플 생성
+um_samples = 100  # 100개의 샘플 생성
 max_lines = 150  # 총 150줄까지 생성
 
 generated_samples_count = 0
@@ -126,25 +110,25 @@ generated_samples_count = 0
 with torch.no_grad():
     with ctx:
         for k in range(num_samples):
-            y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
-            generated_text = decode(y[0].tolist())
+            generated_text = ""  # 각 샘플의 결과물을 저장할 변수
+            for _ in range(max_lines):
+                y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
+                line = decode(y[0].tolist()).strip()  # 생성된 줄을 얻어옴
+                generated_text += f"[{generated_samples_count + 1}] {line}\n"  # 줄번호를 붙이고 결과물에 추가
+                generated_samples_count += 1
 
-            # 결과물을 줄 단위로 분할하고 각 줄에 줄 번호를 붙이고 저장
-            generated_lines = generated_text.strip().split('\n')
-            for line in generated_lines:
-                if generated_samples_count < max_lines:
-                    # 각 샘플을 파일로 저장하고 줄번호를 붙여서 저장
-                    output_path = os.path.join(output_dir, f"[{generated_samples_count + 1}] {line}.txt")
-                    with open(output_path, "w") as file:
-                        file.write(line)
-                        generated_samples_count += 1
-                else:
-                    break
-
-                # 줄바꿈이 있을 때마다 결과물을 저장하고 다시 줄번호를 붙여서 결과물을 생성
+                # 줄바꿈이 있을 때마다 결과물을 저장하고 다시 텍스트를 생성
                 if line.endswith('\n'):
-                    generated_samples_count -= 1
                     break
+
+            # 결과물을 파일로 저장
+            output_path = os.path.join(output_dir, f"sample_{k + 1}.txt")
+            with open(output_path, "w") as file:
+                file.write(generated_text)
+            
+            # 필요한 만큼 결과물을 출력
+            print(generated_text)
+            print("---------------")
 
             if generated_samples_count >= max_lines:
                 break
