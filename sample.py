@@ -6,7 +6,7 @@ from model import GPTConfig, GPT
 
 # 초기 설정
 init_from = "resume"  # 'resume' (from an out_dir) 또는 GPT-2 변형 모델 (예: 'gpt2-xl')
-out_dir = "out"
+out_dir = "out-midi"
 start = "<SOS>"  # 또는 "" 또는 기타 설정할 시작 텍스트
 num_samples = 10  # 생성할 샘플 수
 max_new_tokens = 500  # 각 샘플당 생성할 최대 토큰 수
