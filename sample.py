@@ -124,7 +124,7 @@ def decode(tokens):
 
 # 모델 초기화 및 생성된 샘플 저장 부분입니다.
 num_samples = 10
-
+max_total_tokens = 200  # max_total_tokens 변수를 초기화합니다.
 with torch.no_grad():
     with ctx:
         for k in range(num_samples):
