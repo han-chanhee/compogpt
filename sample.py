@@ -121,6 +121,6 @@ with torch.no_grad():
             generated_text = re.sub(r'\[(\d+)\]', repl, generated_text)
 
             # 파일로 저장
-            output_path = os.path.join(output_dir, f"sample_{k + 1}.txt")
+            output_path = os.path.join(out_dir, f"sample_{k + 1}.txt")
             with open(output_path, "w") as file:
                 file.write(generated_text)
