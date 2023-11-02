@@ -43,8 +43,13 @@ model.to(device)
 # 문장 생성 및 대괄호 안에 숫자 넣기
 generated_lines_with_brackets = []  
 count = 1  
+
 with torch.no_grad():
-    with nullcontext() if device == "cpu" else torch.amp.autocast(device_type=device, dtype=dtype):
+    # Convert dtype string to torch.dtype object
+    torch_dtype = torch.float32 if dtype == "float32" else torch.bfloat16 if dtype == "bfloat16" else torch.float16
+
+    # Use autocast context manager with torch_dtype
+    with torch.amp.autocast(device_type=device, dtype=torch_dtype):
         for _ in range(num_samples):
             y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
             generated_text = decode(y[0].tolist())
@@ -62,7 +67,6 @@ with torch.no_grad():
                 # 생성된 라인 출력
                 print(line_with_bracket)
                 print("---------------")
-
 # 대괄호가 있는 라인 개수 세기
 num_lines_with_brackets = len(generated_lines_with_brackets)
 print(f"대괄호가 있는 라인 개수: {num_lines_with_brackets}")
