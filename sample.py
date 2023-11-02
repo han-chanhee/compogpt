@@ -7,7 +7,6 @@ from contextlib import nullcontext
 import torch
 import tiktoken
 from model import GPTConfig, GPT
-import re
 
 # -----------------------------------------------------------------------------
 init_from = (
@@ -16,7 +15,7 @@ init_from = (
 out_dir = "out"  # ignored if init_from is not 'resume'
 start = "<SOS>"  # or "<|endoftext|>" or etc. Can also specify a file, use as: "FILE:prompt.txt"
 num_samples = 10  # number of samples to draw
-max_new_tokens = 500  # number of tokens generated in each sample
+max_new_tokens = 5000  # number of tokens generated in each sample
 temperature = (
     0.8  # 1.0 = no change, < 1.0 = less random, > 1.0 = more random, in predictions
 )
@@ -75,12 +74,12 @@ if compile:
 # look for the meta pickle in case it is available in the dataset folder
 load_meta = False
 if (
-    init_from == "resume"
-    and "config" in checkpoint
-    and "dataset" in checkpoint["config"]
-):  # older checkpoints might not have these...
-    meta_path = os.path.join("data", checkpoint["config"]["dataset"], "meta.pkl")
-    load_meta = os.path.exists(meta_path)
+     init_from == "resume"
+     and "config" in checkpoint
+     and "dataset" in checkpoint["config"]
+ ):  # older checkpoints might not have these...
+     meta_path = meta_path = os.path.join("data", "meta.pkl")
+     load_meta = os.path.exists(meta_path)
 if load_meta:
     print(f"Loading meta from {meta_path}...")
     with open(meta_path, "rb") as f:
@@ -103,24 +102,41 @@ if start.startswith("FILE:"):
 start_ids = encode(start)
 x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...]
 
+# run generation
+with torch.no_grad():
+    with ctx:
+        for k in range(num_samples):
+            y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
+            print(decode(y[0].tolist()))
+            print("---------------")
+
+output_dir = "generated_samples"
+os.makedirs(output_dir, exist_ok=True)  # 디렉토리 생성
+
 num_samples = 10
 
-# 샘플 생성 및 저장
+max_lines = 150  # 원하는 줄 수로 수정하세요
+generated_samples_count = 0
+
 with torch.no_grad():
     with ctx:
         for k in range(num_samples):
             y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
             generated_text = decode(y[0].tolist())
 
-            # 대괄호 안의 숫자를 1씩 늘려가며 텍스트 내에서 대체
-            def repl(match):
-                num = int(match.group(1))
-                new_num = num + 1  # 숫자를 1씩 더함
-                return f"[{new_num}]"
+            # 결과물을 줄 단위로 분할
+            generated_lines = generated_text.strip().split('\n')
 
-            generated_text = re.sub(r'\[(\d+)\]', repl, generated_text)
+            # 최대 줄 수까지만 저장
+            for line in generated_lines:
+                if generated_samples_count < max_lines:
+                    # 각 샘플을 파일로 저장
+                    output_path = os.path.join(output_dir, f"sample_{generated_samples_count + 1}.txt")
+                    with open(output_path, "w") as file:
+                        file.write(line)
+                        generated_samples_count += 1
+                else:
+                    break
 
-            # 파일로 저장
-            output_path = os.path.join(out_dir, f"sample_{k + 1}.txt")
-            with open(output_path, "w") as file:
-                file.write(generated_text)
+            if generated_samples_count >= max_lines:
+                break
