@@ -102,35 +102,24 @@ if start.startswith("FILE:"):
 start_ids = encode(start)
 x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...]
 
-# 대괄호 안에 숫자를 증가시키면서 텍스트 생성
-generated_lines_with_brackets = []
-count = 1
+num_samples = 10
 
+# 샘플 생성 및 저장
 with torch.no_grad():
     with ctx:
-        for _ in range(num_samples):
+        for k in range(num_samples):
             y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
             generated_text = decode(y[0].tolist())
 
-            # 대괄호가 있는 라인 처리
-            lines = generated_text.split("\n")
-            for line in lines:
-                if "[" in line and "]" in line:
-                    # 대괄호 안의 숫자를 변경
-                    line_with_bracket = line.replace("[", f"[{count}]", 1)
-                    count += 1
-                    generated_lines_with_brackets.append(line_with_bracket)
-                else:
-                    generated_lines_with_brackets.append(line)
+            # 대괄호 안의 숫자를 1씩 늘려가며 텍스트 내에서 대체
+            def repl(match):
+                num = int(match.group(1))
+                new_num = num + 1  # 숫자를 1씩 더함
+                return f"[{new_num}]"
 
+            generated_text = re.sub(r'\[(\d+)\]', repl, generated_text)
 
-# 생성된 라인 중에서 대괄호 안의 숫자를 1부터 증가시키며 저장
-output_dir = "generated_samples"
-os.makedirs(output_dir, exist_ok=True)
-
-with torch.no_grad():
-    with ctx:
-        for k, generated_line in enumerate(generated_lines_with_brackets):
-            output_path = os.path.join(output_dir, f"sample_{k+1}.txt")
+            # 파일로 저장
+            output_path = os.path.join(output_dir, f"sample_{k + 1}.txt")
             with open(output_path, "w") as file:
-                file.write(generated_line)
+                file.write(generated_text)
