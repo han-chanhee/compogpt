@@ -123,9 +123,6 @@ with torch.no_grad():
                 else:
                     generated_lines_with_brackets.append(line)
 
-                # 생성된 라인 출력
-                print(line_with_bracket)
-                print("---------------")
 
 # 생성된 라인 중에서 대괄호 안의 숫자를 1부터 증가시키며 저장
 output_dir = "generated_samples"
