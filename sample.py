@@ -58,12 +58,15 @@ if compile:
 # 파일에서 시작 텍스트 읽어오기
 if start.startswith("FILE:"):
     with open(start[5:], "r", encoding="utf-8") as f:
-        start = f.read()
+        start_text = f.read()
+else:
+    start_text = start
 
-# 인코딩 및 디코딩 함수 정의
+# 시작 텍스트를 인코딩하여 텐서로 변환
 enc = tiktoken.get_encoding("gpt2")
 encode = lambda s: enc.encode(s, allowed_special={""})
-decode = lambda l: "".join([enc.decode([i]) for i in l])
+start_ids = encode(start_text)
+x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...]
 
 # 생성된 샘플 저장 폴더 생성
 output_dir = out_dir
@@ -75,12 +78,12 @@ with torch.no_grad():
         for k in range(num_samples):
             generated_tokens = []
             while len(generated_tokens) < max_total_tokens:
-                y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
+                y = model.generate(x, max_total_tokens, temperature=temperature, top_k=top_k)
                 generated_tokens.extend(y[0].tolist())
                 if "[" in enc.decode([y[0][-1]]):
                     break
 
-            generated_text = decode(generated_tokens)
+            generated_text = enc.decode(generated_tokens)
             output_path = os.path.join(output_dir, f"sample_{k+1}.txt")
             with open(output_path, "w") as file:
                 file.write(generated_text)
