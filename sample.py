@@ -7,7 +7,7 @@ from contextlib import nullcontext
 
 # 초기 설정
 init_from = "resume"  # 'resume' 또는 GPT-2 모델 (예: 'gpt2-xl')
-out_dir = "out"
+out_dir = "out-midi"
 start = "<SOS>"
 num_samples = 10
 max_new_tokens = 500
