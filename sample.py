@@ -102,7 +102,7 @@ if start.startswith("FILE:"):
 start_ids = encode(start)
 x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...]
 
-um_samples = 100  # 100개의 샘플 생성
+um_samples = 1  # 100개의 샘플 생성
 max_lines = 150  # 총 150줄까지 생성
 
 generated_samples_count = 0
