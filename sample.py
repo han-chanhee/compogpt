@@ -7,6 +7,7 @@ from contextlib import nullcontext
 import torch
 import tiktoken
 from model import GPTConfig, GPT
+import re
 
 # -----------------------------------------------------------------------------
 init_from = (
