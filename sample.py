@@ -13,7 +13,7 @@ init_from = (
     "resume"  # either 'resume' (from an out_dir) or a gpt2 variant (e.g. 'gpt2-xl')
 )
 out_dir = "out"  # ignored if init_from is not 'resume'
-start = "<sos>"  # or "<|endoftext|>" or etc. Can also specify a file, use as: "FILE:prompt.txt"
+start = "<SOS>"  # or "<|endoftext|>" or etc. Can also specify a file, use as: "FILE:prompt.txt"
 num_samples = 10  # number of samples to draw
 max_new_tokens = 5000  # number of tokens generated in each sample
 temperature = (
@@ -92,7 +92,7 @@ else:
     # ok let's assume gpt-2 encodings by default
     print("No meta.pkl found, assuming GPT-2 encodings...")
     enc = tiktoken.get_encoding("gpt2")
-    encode = lambda s: enc.encode(s, allowed_special={"<eos>"})
+    encode = lambda s: enc.encode(s, allowed_special={"<EOS>"})
     decode = lambda l: enc.decode(l)
 
 # encode the beginning of the prompt
