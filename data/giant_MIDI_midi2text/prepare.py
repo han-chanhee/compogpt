@@ -1,30 +1,28 @@
 import os
-import tiktoken
 import numpy as np
 
-
+# Read data from file
 with open("combined_formatted_data2.txt", "r") as f:
-    data = f.read()
-n = len(data)
-train_data = data[: int(n * 0.9)]
-val_data = data[int(n * 0.9) :]
+    data = f.readlines()
 
-# encode with tiktoken gpt2 bpe
-enc = tiktoken.get_encoding("gpt2")
-train_ids = enc.encode_ordinary(train_data)
-val_ids = enc.encode_ordinary(val_data)
-print(len(set(train_ids)))
-print(set(train_ids))
-print(len(set(val_ids)))
-print(set(val_ids))
-print(f"train has {len(train_ids):,} tokens")
-print(f"val has {len(val_ids):,} tokens")
+# Flatten the list of lines to make each line a separate "token"
+flat_data = [token.strip() for line in data for token in line.split()]
 
-# export to bin files
-train_ids = np.array(train_ids, dtype=np.uint16)
-val_ids = np.array(val_ids, dtype=np.uint16)
-train_ids.tofile(os.path.join(os.path.dirname(__file__), "train.bin"))
-val_ids.tofile(os.path.join(os.path.dirname(__file__), "val.bin"))
+# Split into training and validation sets
+n = len(flat_data)
+train_data = flat_data[: int(n * 0.9)]
+val_data = flat_data[int(n * 0.9) :]
 
-# train.bin has 301,966 tokens
-# val.bin has 36,059 tokens
+# Print information about the tokens
+print(f"train has {len(train_data):,} tokens")
+print(f"val has {len(val_data):,} tokens")
+
+# Export to bin files
+train_ids = np.array(train_data, dtype=np.object)  # Use dtype=np.object to store strings
+val_ids = np.array(val_data, dtype=np.object)
+train_ids.tofile(os.path.join(os.path.dirname(__file__), "train.bin"), sep="\n")
+val_ids.tofile(os.path.join(os.path.dirname(__file__), "val.bin"), sep="\n")
+
+# Print token counts
+print(f"train.bin has {len(train_data):,} tokens")
+print(f"val.bin has {len(val_data):,} tokens")
