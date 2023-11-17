@@ -5,8 +5,20 @@ import numpy as np
 with open("combined_formatted_data2.txt", "r") as f:
     data = f.readlines()
 
-# Filter out non-numeric values and remove duplicates
-flat_data = list(set(token.strip() for line in data for token in line.split() if token.isdigit()))
+# Extract numeric tokens and remove duplicates
+numeric_tokens = set()
+for line in data:
+    tokens = line.split()
+    for token in tokens:
+        # Check if the token is a numeric value
+        try:
+            numeric_value = int(token)
+            numeric_tokens.add(str(numeric_value))
+        except ValueError:
+            pass
+
+# Convert to a list and sort for consistency
+flat_data = sorted(list(numeric_tokens))
 
 # Split into training and validation sets
 n = len(flat_data)
