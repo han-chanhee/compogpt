@@ -10,8 +10,12 @@ flat_data = list(set(token.strip() for line in data for token in line.split()))
 
 # Split into training and validation sets
 n = len(flat_data)
-train_data = flat_data[: int(n * 0.9)]
-val_data = flat_data[int(n * 0.9) :]
+train_data = flat_data[:int(n * 0.9)]
+val_data = flat_data[int(n * 0.9):]
+
+# Ensure an even number of elements in val_data
+if len(val_data) % 2 != 0:
+    val_data.pop()
 
 # Print information about the tokens
 print(f"train has {len(train_data):,} tokens")
@@ -32,3 +36,4 @@ val_ids.tofile(
 # Print token counts
 print(f"train.bin has {len(train_data):,} tokens")
 print(f"val.bin has {len(val_data):,} tokens")
+
