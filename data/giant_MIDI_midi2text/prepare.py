@@ -21,11 +21,11 @@ if len(val_data) % 2 != 0:
 print(f"train has {len(train_data):,} tokens")
 print(f"val has {len(val_data):,} tokens")
 
-# Export to bin files
+# Export to bin files with dtype=np.uint16
 train_ids = np.array(
-    train_data, dtype=np.object_
-)  # Use dtype=np.object to store strings
-val_ids = np.array(val_data, dtype=np.object_)
+    train_data, dtype=np.uint16
+)  # Use dtype=np.uint16 to store unsigned 16-bit integers
+val_ids = np.array(val_data, dtype=np.uint16)
 train_ids.tofile(
     os.path.join(os.path.dirname(__file__), "train.bin"), sep="\n", format="%s"
 )
@@ -36,4 +36,3 @@ val_ids.tofile(
 # Print token counts
 print(f"train.bin has {len(train_data):,} tokens")
 print(f"val.bin has {len(val_data):,} tokens")
-
