@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 # Read data from file
-with open(combined_formatted_data2.txt", "r") as f:
+with open("combined_formatted_data2.txt", "r") as f:
     data = f.readlines()
 
 # Flatten the list of lines to make each line a separate "token"
