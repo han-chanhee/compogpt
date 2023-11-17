@@ -5,8 +5,8 @@ import numpy as np
 with open("combined_formatted_data2.txt", "r") as f:
     data = f.readlines()
 
-# Flatten the list of lines to make each line a separate "token" and remove duplicates
-flat_data = list(set(token.strip() for line in data for token in line.split()))
+# Filter out non-numeric values and remove duplicates
+flat_data = list(set(token.strip() for line in data for token in line.split() if token.isdigit()))
 
 # Split into training and validation sets
 n = len(flat_data)
