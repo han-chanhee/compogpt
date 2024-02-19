@@ -107,22 +107,37 @@ class Block(nn.Module):
 
 @dataclass
 class GPTConfig:
-    block_size: int = 1024
-    vocab_size: int = 50304 # GPT-2 vocab_size of 50257, padded up to nearest multiple of 64 for efficiency
-    n_layer: int = 12
-    n_head: int = 12
-    n_embd: int = 768
-    dropout: float = 0.0
-    bias: bool = True # True: bias in Linears and LayerNorms, like GPT-2. False: a bit better and faster
+     def __init__(self, vocab_size, block_size, **kwargs):
+        self.vocab_size = vocab_size
+        self.block_size = block_size
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 class GPT(nn.Module):
 
     def __init__(self, config):
         super().__init__()
-        assert config.vocab_size is not None
-        assert config.block_size is not None
         self.config = config
+        self.tok_emb = nn.Embedding(config.vocab_size, config.n_embd)
+        self.pos_emb = nn.Parameter(torch.zeros(1, config.block_size, config.n_embd))
+        self.drop = nn.Dropout(config.dropout)
+        self.blocks = nn.Sequential(*[Block(config.n_embd, config.n_head, config) for _ in range(config.n_layer)])
+        self.ln_f = nn.LayerNorm(config.n_embd)
 
+    def forward(self, input_ids):
+        tok_emb = self.tok_emb(input_ids)
+        pos_emb = self.pos_emb[:, :tok_emb.size(1)]
+        x = self.drop(tok_emb + pos_emb)
+        x = self.blocks(x)
+        x = self.ln_f(x)
+        logits = torch.matmul(x, self.tok_emb.weight.t())
+        reward_prediction = self.predict_reward(x[:, -1])  # Assuming predicting reward based on the last token's hidden state
+        return logits, reward_prediction
+
+    def predict_reward(self, hidden_state):
+        # Add a new output layer for predicting rewards
+        reward_prediction = nn.Linear(self.config.n_embd, 1)  # Assuming scalar reward prediction
+        return reward_prediction(hidden_state)
         self.transformer = nn.ModuleDict(dict(
             wte = nn.Embedding(config.vocab_size, config.n_embd),
             wpe = nn.Embedding(config.block_size, config.n_embd),
@@ -328,3 +343,29 @@ class GPT(nn.Module):
             idx = torch.cat((idx, idx_next), dim=1)
 
         return idx
+
+class SingleAttention(nn.Module):
+    def __init__(self, n_embd, config):
+        super().__init__()
+        self.q = nn.Linear(n_embd, n_embd)
+        self.k = nn.Linear(n_embd, n_embd)
+        self.v = nn.Linear(n_embd, n_embd)
+        self.drop = nn.Dropout(config.dropout)
+
+    def forward(self, x):
+        q, k, v = self.q(x), self.k(x), self.v(x)
+        w = torch.matmul(q, k.transpose(-2, -1))
+        w = w / (x.size(-1) ** 0.5)
+        w = F.softmax(w, dim=-1)
+        w = self.drop(w)
+        return torch.matmul(w, v)
+
+class MLP(nn.Module):
+    def __init__(self, n_embd, config):
+        super().__init__()
+        self.fc1 = nn.Linear(n_embd, config.n_embd * 4)
+        self.fc2 = nn.Linear(config.n_embd * 4, n_embd)
+        self.drop = nn.Dropout(config.dropout)
+
+    def forward(self, x):
+        return self.fc2(self.drop(F.gelu(self.fc1(x))))
